@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <title>Double Pendulam</title>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        
+        <script type="text/javascript">
+            var canvas = document.getElementById('canvas');
+            var context=canvas.getContext('2d');
+            canvas.width=600;
+            canvas.height=500;            
+            canvas.style.background="#000";
+            
+            
+            let x0=0;
+            let y0=0;
+            
+            let theta1=Math.PI/6;
+            let theta2=Math.PI/8;
+            
+            let dtheta1=0;
+            let dtheta2=0;
+            let d2theta1=0;
+            let d2theta2=0;
+            
+            let m1=20;
+            let m2=10;
+            let l1=150;
+            let l2=150;
+            
+            let g=9.8;
+            let time=0.1;
+            
+            function drawCircle(circle){
+                context.beginPath();
+                context.arc(circle.x, circle.y,circle.mass,0,Math.PI*2);
+                context.fillStyle='#fff';
+                context.fill();
+                context.closePath();
+                
+            }
+            
+            function drawLine(line){
+                context.beginPath();
+                context.moveTo(line.x0,line.y0);
+                context.lineTo(line.x1, line.y1);
+                context.strokeStyle='#fff';
+                context.stroke();
+                context.closePath();
+                
+            }
+            let circle1={x:x0+l1*Math.sin(theta1), y:y0+l1*Math.cos(theta1),mass:m1}
+            let circle2={x:x0+l1*Math.sin(theta1)+l2*Math.sin(theta2),y:y0+l1*Math.cos(theta1)+l2*Math.cos(theta2),mass:m2}
+            
+            
+            function init(){
+                context.clearRect(0,0,canvas.width,canvas.height);
+                context.save();
+                context.translate(canvas.width/2,100);
+                context.beginPath();
+                context.moveTo(-40,0);
+                context.lineTo(40,0);
+                context.lineWidth=10;
+                context.strokeStyle='#fff';
+                context.stroke();
+                context.closePath();
+                context.lineWidth=2;
+                let line1={x0:x0,y0:y0,x1:circle1.x,y1:circle1.y}
+                let line2={x0:circle1.x, y0:circle1.y,x1:circle2.x,y1:circle2.y}
+                drawLine(line1);
+                drawLine(line2);
+                drawCircle(circle1);
+                drawCircle(circle2);
+                
+                let mu      =  1+m1/m2;
+                d2theta1  =  (g*(Math.sin(theta2)*Math.cos(theta1-theta2)-mu*Math.sin(theta1))-(l2*dtheta2*dtheta2+l1*dtheta1*dtheta1*Math.cos(theta1-theta2))*Math.sin(theta1-theta2))/(l1*(mu-Math.cos(theta1-theta2)*Math.cos(theta1-theta2)));
+                d2theta2  =  (mu*g*(Math.sin(theta1)*Math.cos(theta1-theta2)-Math.sin(theta2))+(mu*l1*dtheta1*dtheta1+l2*dtheta2*dtheta2*Math.cos(theta1-theta2))*Math.sin(theta1-theta2))/(l2*(mu-Math.cos(theta1-theta2)*Math.cos(theta1-theta2)));
+                dtheta1   += d2theta1*time;
+                dtheta2   += d2theta2*time;
+                theta1    += dtheta1*time;
+                theta2    += dtheta2*time;
+
+                circle1.x = x0+l1*Math.sin(theta1);
+                circle1.y = y0+l1*Math.cos(theta1);
+                circle2.x = x0+l1*Math.sin(theta1)+l2*Math.sin(theta2);
+                circle2.y = y0+l1*Math.cos(theta1)+l2*Math.cos(theta2);
+
+//                line1.x  = circle1.x;
+//                line1.y  = circle1.y;
+//                line2.x0 = circle1.x;
+//                line2.y0 = circle1.y;
+//                line2.x  = circle2.x;
+//                line2.y  = circle2.y;
+                context.restore();
+                
+                requestAnimationFrame(init);
+            }
+            init();
+            
+        
+        </script>
+    </body>
+</html>

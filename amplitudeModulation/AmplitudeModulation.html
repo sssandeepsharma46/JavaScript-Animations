@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <title>Amplitude Modulation</title>
+    </head>
+    <body>
+        
+        <script type="text/javascript">           
+            var canvas=document.createElement('canvas');
+            canvas.id='canvas';
+            canvas.width=window.innerWidth;
+            canvas.height=800; 
+            canvas.style.background="#1f0f0f";
+            document.body.appendChild(canvas);
+            var context=canvas.getContext('2d');
+            
+            let Am= 50;
+            let Ac=70;
+            let Fm=10;
+            let Fc=100;
+            let t=1/canvas.width;
+            var m=Am*Math.cos(2*Math.PI*Fm*t);
+            var c=Ac*Math.cos(2*Math.PI*Fc*t);
+            var x=0;
+            
+//            function drawAmplitudeModulation(){
+//                
+//                Am=document.getElementById('am').value;// 50;
+//                Ac=document.getElementById('ac').value;//70;
+//                Fm=document.getElementById('fm').value;//4;
+//                Fc=document.getElementById('fc').value;//100;
+//                
+//                
+//                if(Am.length !=0){
+//                    if(Ac.length !=0){
+//                        if(Fm.length !=0){
+//                            if(Fc.length !=0){
+//                                drawMessageSignal();
+//                                drawCarrierSignal();
+//                                drawModulatedSignal();
+//                            }else{
+//                                alert('Enter carrie signal frequency!');
+//                                return;
+//                            }                            
+//                        }else{
+//                            alert('Enter message signal frequency!');
+//                            return;
+//                        }
+//                    }else{
+//                        alert('Enter amplitude of carrier signal !');
+//                        return;
+//                    }                    
+//                }
+//                else{
+//                    alert('Enter amplitude of message signal !');
+//                    return;
+//                }                
+//            }
+            
+            //drawMessageSignal();
+            //drawCarrierSignal();
+            //drawModulatedSignal();
+            
+            //draw message singal                     
+            function drawMessageSignal(){
+                x=0;
+                //context.translate(canvas.width/2,canvas.height/2);
+                for(let i=0;i<canvas.width;i+=t){
+                    x+=0.2;
+                    let y=Am*Math.cos(2*Math.PI*Fm*i);
+                    context.beginPath();
+                    context.strokeStyle="#fff";
+                    context.moveTo(x,2*Am+20);
+                    context.lineTo(x,(2*Am+20)-y);
+                    context.stroke();
+                    context.closePath();                
+                }
+            }
+            
+            function drawCarrierSignal(){
+                x=0;
+                for(let i=0;i<canvas.width;i+=t){
+                    x+=0.2;
+                    let y=Ac*Math.cos(2*Math.PI*Fc*i);
+                    context.beginPath();
+                    context.strokeStyle='#FA5858';
+                    context.lineWidth=1;
+                    context.moveTo(x,(2*Am+20)+(2*Ac+20));
+                    context.lineTo(x,(2*Am+20)+(2*Ac+20)-y);
+                    context.stroke();
+                    context.closePath();
+                }
+            }
+            
+            function drawModulatedSignal(){
+                x=0;
+                for(let i=0;i<canvas.width;i+=t){
+                    x+=0.2;
+                    let temp=Am*Math.cos(2*Math.PI*Fm*i);
+                    let tempAmplitude=Ac+temp;
+                    let y=tempAmplitude*Math.cos(2*Math.PI*Fc*i);
+                    context.beginPath();
+                    context.strokeStyle='#F7FE2E';
+                    context.moveTo(x,(2*Am+20)+(2*Ac+20)+(250));
+                    context.lineTo(x,(2*Am+20)+(2*Ac+20)+(250)-y);
+                    context.stroke();
+                    context.closePath();
+                }
+            }
+            
+            var mYArr=[];
+            var cYArr=[];
+            var modYArr=[];
+            function messageSignal(x){
+                
+                let y=Am*Math.cos(2*Math.PI*Fm*x);
+                mYArr.unshift(y);
+                for(let i=0;i<mYArr.length;i++){
+                    context.beginPath();
+                    context.fillStyle="#fff";
+                    context.arc(i*5+10,((2*Am+20)-mYArr[i]),2,0,Math.PI*2);
+                    //context.moveTo(x*1000,2*Am+20);
+                    //context.lineTo(x*1000,(2*Am+20)-y);
+                    context.fill();
+                    context.closePath(); 
+                }                              
+            }
+            
+            function carrierSignal(x){
+                let y=Ac*Math.cos(2*Math.PI*Fc*x);
+                cYArr.unshift(y);
+                for(let i=0;i<cYArr.length;i++){                    
+                    context.beginPath();
+                    context.fillStyle='#FA5858';
+                    context.arc(i*5+10,(2*Am+20)+(2*Ac+20)-cYArr[i],2,0,Math.PI*2);
+                    context.fill();
+                    //context.lineWidth=1;
+                    //context.moveTo(x+10,(2*Am+20)+(2*Ac+20));
+                    //context.lineTo(x+10,(2*Am+20)+(2*Ac+20)-cYArr[i]);
+                    //context.stroke();
+                    context.closePath();
+                }
+            }
+            
+            function modulatedSingal(x){
+                let temp=Am*Math.cos(2*Math.PI*Fm*x);
+                let tempAmplitude=Ac+temp;
+                let y=tempAmplitude*Math.cos(2*Math.PI*Fc*x);
+                modYArr.unshift(y);
+                for(let i=0;i<modYArr.length;i++){                                                                            
+                    context.beginPath();
+                    context.fillStyle='#F7FE2E';
+                    context.arc(i*5+10,((2*Am+20)+(2*Ac+20)+(250)-modYArr[i]),2,0,Math.PI*2);
+                    context.fill();
+                    //context.moveTo(x,(2*Am+20)+(2*Ac+20)+(250));
+                    //context.lineTo(x,(2*Am+20)+(2*Ac+20)+(250)-y);
+                    //context.stroke();
+                    context.closePath();
+                }
+            }
+            
+            function animateSignal(){
+                context.clearRect(0,0,canvas.width,canvas.height);
+                x+=(1/canvas.width);
+                if(x*5>canvas.width){
+                    x=0;
+                }
+                                
+                messageSignal(x);
+                carrierSignal(x);
+                modulatedSingal(x);
+                requestAnimationFrame(animateSignal);
+            }
+            animateSignal();
+            
+        </script>
+    </body>
+
+</html>

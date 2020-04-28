@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Start Field</title>
+    <script type="text/javascript">
+      const MAX_DEPTH=45;
+      var starSet=120;
+      var canvas,context;
+      var stars=new Array(700);
+      var leftRightMove=0;
+
+      window.onload=function(){
+        canvas = document.getElementById('canvas');
+        if(canvas && canvas.getContext){
+          context=canvas.getContext('2d');
+          initializeStart();
+          setInterval(loop,30);
+        }
+      }
+
+
+      function randomRange(minValue, maxValue){
+        return (Math.floor(Math.random()*(maxValue-minValue-1))+minValue);
+      }
+      function initializeStart(){
+        for(let i=0;i<stars.length;i++){
+          stars[i]={
+            x:randomRange(-10,10),
+            y:randomRange(-10,10),
+            z:randomRange(1,MAX_DEPTH)
+          }
+        }
+      }
+
+      document.addEventListener('keydown',keydownHandler);
+      function keydownHandler(e){
+        if(e.keyCode==37){
+
+          if(leftRightMove+canvas.width/2<0){
+            return;
+          }else{
+            leftRightMove-=5;
+
+          }
+
+
+        }else if(e.keyCode==39){
+
+          if(canvas.width/2+leftRightMove>=canvas.width){
+            return;
+          }else{
+            leftRightMove+=5;
+
+          }
+
+        }
+        console.log(leftRightMove);
+      }
+
+      function loop(){
+        var halfWidth=canvas.width/2;
+        var halfHeight=canvas.height/2;
+
+        context.fillStyle='rgb(0,0,0)';
+        context.fillRect(0,0,canvas.width,canvas.height);
+
+        for( var i = 0; i < stars.length; i++ ) {
+          stars[i].z -= 0.5;
+
+          if( stars[i].z <= 0 ) {
+            stars[i].x = randomRange(-25,25);
+            stars[i].y = randomRange(-25,25);
+            stars[i].z = MAX_DEPTH;
+          }
+          var k  = starSet / stars[i].z;
+          var px = stars[i].x * k + halfWidth+leftRightMove;
+          var py = stars[i].y * k + halfHeight;
+
+          if( px >= 0 && px <= 500 && py >= 0 && py <= 400 ) {
+            var size = (1 - stars[i].z / 32.0) * 5;
+            var shade = parseInt((1 - stars[i].z / 32.0) * 255);
+            context.fillStyle = "rgb(" + shade + "," + shade + "," + shade + ")";
+            context.fillRect(px,py,size,size);
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" width="500" height="400"></canvas>
+  </body>
+</html>

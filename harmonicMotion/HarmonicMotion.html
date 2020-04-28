@@ -1,0 +1,79 @@
+<htm>
+
+    <head>
+        <title>Harmonic Motion</title>
+
+    </head>
+
+    <body>
+        <canvas id="canvas"></canvas>
+        <script type="text/javascript">
+            (function() {
+                document.body.style.margin = 0;
+                var canvas = document.getElementById('canvas');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                canvas.style.background = "#EfffDf";
+                var context = canvas.getContext('2d');
+                const PI = Math.PI;
+                let frameCount = 0,
+                    amplitude = 250,
+                    circleArr = [];
+
+                const cirlce = {
+                    x: canvas.wdith / 2,
+                    y: canvas.height / 2,
+                    r: 20
+                }
+
+                for (let i = 0; i < 5; i++) {
+                    circleArr.push(new Circle(canvas.width / 2 * Math.random(), canvas.height / 2 * Math.random(), 20, "#" + Math.floor(Math.random() * 99) + "0000"));
+                }
+
+                function Circle(x, y, r, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.r = r;
+                    this.color = color;
+                    this.drawCircle = function() {
+                        context.beginPath();
+                        context.fillStyle = this.color;
+                        context.arc(this.x, this.y, this.r, 0, 2 * PI, false);
+                        context.fill();
+                        context.closePath();
+                    }
+                }
+
+                function animate() {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+
+                    circleArr.forEach(cir => {
+                        let x = amplitude * Math.sin(frameCount / 200 * Math.PI * 2);
+                        let y = amplitude * Math.sin(2 * PI * (frameCount / 200));
+                        cir.x = canvas.width / 2 - x;
+                        cir.y = canvas.height / 2 - y;
+                        cir.drawCircle();
+                    });
+                    //drawBall(canvas.width / 2 - x, canvas.height / 2);
+                    frameCount++;
+                    //console.log(frameCount);
+                    if (frameCount == 2000) {
+                        frameCount = 0;
+                    }
+                    requestAnimationFrame(animate);
+                }
+                //setInterval(animate(), 1000);
+
+                function drawBall(x, y) {
+                    context.beginPath();
+                    context.fillStyle = "red";
+                    context.arc(x, y, cirlce.r, 0, PI * 2, false);
+                    context.fill();
+                    context.closePath();
+                }
+
+                animate();
+            })();
+        </script>
+    </body>
+</htm>

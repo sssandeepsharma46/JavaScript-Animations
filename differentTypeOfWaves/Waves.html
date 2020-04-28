@@ -1,0 +1,119 @@
+<html>
+
+<head>
+    <title>Waves</title>
+
+</head>
+
+<body>
+    <script type="text/javascript">
+        (function() {
+            document.body.style.margin = 0;
+            var canvas = document.createElement('canvas');
+            canvas.width = 1000;
+            canvas.height = 560;
+            canvas.style.background = "#000";
+            document.body.appendChild(canvas);
+
+            var context = canvas.getContext('2d');
+
+            var divTime = document.createElement("div");
+            divTime.id = "divtime";
+            document.body.appendChild(divTime);
+
+
+            var yAxisArr = [];
+
+
+            let x = 0;
+            let gridSize = 10,
+                frameCount = 60,
+                canvastimeInterval = 1 / canvas.width,
+                numberOfAnglesInInterval = 1000;
+            var sinW = new Object();
+            sinW.wavelength = 1;
+            sinW.amplitude = canvas.height / 2 - 5 * gridSize;
+            sinW.frequency = 100;
+            sinW.interval = 1 / sinW.frequency;
+            sinW.anglesInInterval = (sinW.interval / numberOfAnglesInInterval);
+
+            let increment = sinW.interval;
+            let date = null;
+            let y = null;
+
+            function sinWave(x) {
+                let y = sinW.amplitude * Math.sin(sinW.wavelength * sinW.frequency*x);
+                yAxisArr.unshift(y);
+                <!-- for (let a = 0; a < canvas.width; a += ((canvastimeInterval * sinW.frequency) / 1000)) { -->
+                    <!-- y = sinW.amplitude * Math.sin(2 * Math.PI * sinW.frequency * a * sinW.wavelength); -->
+                    <!-- context.beginPath(); -->
+                    <!-- context.fillStyle = "#ffb"; -->
+                    <!-- context.arc(-canvas.width / 2 + a * 1, -y, 2, 0, Math.PI * 2); -->
+                    <!-- context.fill(); -->
+                    <!-- context.closePath(); -->
+                <!-- } -->
+
+                for (let i = 0; i < canvas.width; i++) {
+                     context.beginPath();
+                     context.fillStyle = "#fff";
+                     context.arc(-canvas.width / 2 + i, yAxisArr[i], 2, 0, Math.PI * 2);
+                     context.fill();
+                     context.closePath();
+                 }
+                 if (yAxisArr.length > canvas.width) {
+                     yAxisArr.pop();
+                 }
+                //increment += sinW.interval;
+            }
+
+            function drawGrid() {
+                context.strokeStyle = "#fff";
+                for (let i = 0; i < canvas.width; i += gridSize) {
+                    context.beginPath();
+                    context.strokeStyle = "#fff";
+                    context.moveTo(i, 0);
+                    context.lineTo(i, canvas.height);
+                    context.stroke();
+                    context.closePath();
+                }
+                for (let j = 0; j < canvas.height; j += gridSize) {
+                    context.beginPath();
+                    context.strokeStyle = "#fff";
+                    context.moveTo(0, j);
+                    context.lineTo(canvas.width, j);
+                    context.stroke();
+                    context.closePath();
+                }
+            }
+
+            function drawWaves() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawGrid();
+                context.save();
+                context.translate(canvas.width / 2, canvas.height / 2);
+                context.beginPath();
+                context.fillStyle = "#fff";
+                context.lineWidth = 4;
+                context.moveTo(0, -canvas.height / 2);
+                context.lineTo(0, canvas.height / 2);
+                context.moveTo(-canvas.width / 2, 0);
+                context.lineTo(canvas.width / 2, 0);
+                context.stroke();
+                context.closePath();
+                x += (Math.PI * 2) / 36000; //0.001 deg
+                if (x > canvas.width) {
+                    x = 0;
+                }
+                sinWave(x);
+                context.restore();
+                document.getElementById("divtime").innerHTML = new Date();
+                requestAnimationFrame(drawWaves);
+            }
+            //setInterval(drawWaves, 1000/frequency);
+            drawWaves();
+            //var cancel=setInterval(sinWave,1000);
+        })();
+    </script>
+</body>
+
+</html>
