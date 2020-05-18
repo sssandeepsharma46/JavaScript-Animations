@@ -1,0 +1,14 @@
+{
+  "name": "fourier-series",
+  "version": "1.0.0",
+  "description": "Fourier series animation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Sandeep",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "8.3.0"
+  }
+}
