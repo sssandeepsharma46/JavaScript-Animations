@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shift Keying Signal</title>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script type="text/javascript">
+        const canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            WIDTH = window.innerWidth,
+            HEIGHT = window.innerHeight;
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+        canvas.style.background = 'black';
+        document.body.style.margin = 0;
+
+        //Variables
+        var messageBits = [1, 0, 1, 1, 1, 0, 0, 1],
+            bitSize = WIDTH / messageBits.length, bitIndex = 0, mapObj = new Map(), t = 0, incrementStep = 1, yPostOff = HEIGHT / 3, f = 0, phaseDiff = 0;
+
+
+        initializeMapObj();
+
+        //function to setup the mapObj
+        function initializeMapObj() {
+            for (; t < WIDTH; t += incrementStep) {
+                if (t >= (bitIndex) * bitSize && t < (bitIndex + 1) * bitSize) {
+                    mapObj.set(t, messageBits[bitIndex]);
+                }
+                else {
+                    bitIndex++;
+                }
+            }
+        }
+
+
+        //function to draw the message signal
+        function drawMessageSignal() {
+            context.fillStyle = 'white';
+            context.strokeStyle = 'wheat';
+            context.moveTo(0, yPostOff - yPostOff / 2);
+            context.lineTo(WIDTH, yPostOff - yPostOff / 2);
+            context.stroke();
+            for (const k of mapObj.keys()) {
+                if (mapObj.get(k) == 0) {
+                    context.beginPath();
+                    context.arc(k, yPostOff - yPostOff / 2, 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+                }
+                else {
+                    context.beginPath();
+                    context.arc(k, yPostOff - yPostOff / 2 - 50, 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+                }
+            }
+        }
+
+        //ASK Signal
+        function ASKSignal(phase) {
+            context.fillStyle = 'white';
+            context.strokeStyle = 'wheat';
+            context.moveTo(0, 2 * yPostOff - yPostOff / 2);
+            context.lineTo(WIDTH, 2 * yPostOff - yPostOff / 2);
+            context.stroke();
+            for (const k of mapObj.keys()) {
+                if (mapObj.get(k) == 0) {
+                    context.beginPath();
+                    context.arc(k, 2 * yPostOff - yPostOff / 2, 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+                    f = 0;
+                }
+                else {
+                    context.beginPath();
+                    context.arc(k, 2 * yPostOff - yPostOff / 2 - 50 * Math.sin(2 * Math.PI * f + phase), 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+                    f += 1 / 50;
+                }
+            }
+        }
+
+        //FSK Signal
+        function FSKSignal(phase) {
+            context.fillStyle = 'white';
+            context.strokeStyle = 'wheat';
+            context.moveTo(0, 3 * yPostOff - yPostOff / 2);
+            context.lineTo(WIDTH, 3 * yPostOff - yPostOff / 2);
+            context.stroke();
+            for (const k of mapObj.keys()) {
+                if (mapObj.get(k) == 0) {
+                    context.beginPath();
+                    context.arc(k, 3 * yPostOff - yPostOff / 2 - 50 * Math.sin(2 * Math.PI * f + phase), 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+                    f += 1 / 50;
+                }
+                else {
+                    context.beginPath();
+                    context.arc(k, 3 * yPostOff - yPostOff / 2 - 50 * Math.sin(2 * Math.PI * f + phase), 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+                    f += 1 / 32;
+                }
+            }
+        }
+
+
+
+        function loop() {
+            context.clearRect(0, 0, WIDTH, HEIGHT);
+            drawMessageSignal();
+            ASKSignal(phaseDiff);
+            FSKSignal(phaseDiff);
+            phaseDiff+=0.05;
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+    </script>
+</body>
+
+</html>
