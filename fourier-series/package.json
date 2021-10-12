@@ -9,6 +9,6 @@
   "author": "Sandeep",
   "license": "ISC",
   "dependencies": {
-    "electron": "8.3.0"
+    "electron": "11.5.0"
   }
 }
